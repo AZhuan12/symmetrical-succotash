@@ -1,1 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>English Classic Reader | 英文名著阅读工具</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg: #f3f4f6;
+      --bg-card: #ffffff;
+      --bg-soft: #f9fafb;
+      --text: #111827;
+      --text-soft: #4b5563;
+      --accent: #2563eb;
+      --accent-soft: #dbeafe;
+      --border: #e5e7eb;
+    }
 
+    body.dark {
+      --bg: #020617;
+      --bg-card: #020617;
+      --bg-soft: #020617;
+      --text: #e5e7eb;
+      --text-soft: #9ca3af;
+      --accent: #3b82f6;
+      --accent-soft: #111827;
+      --border: #1f2937;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top left, #dbeafe, #eff6ff 35%, #f9fafb 75%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    body.dark {
+      background: radial-gradient(circle at top left, #1e293b, #020617 55%, #020617 100%);
+    }
+
+    .app {
+      width: 100%;
+      max-width: 1200px;
+      background: rgba(255, 255, 255, 0.88);
+      border-radius: 20px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(16px);
+      padding: 18px 18px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    body.dark .app {
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    h1 {
+      font-size: 22px;
+      letter-spacing: 0.04em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: var(--text-soft);
+    }
+
+    .header-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .btn,
+    .btn-icon {
+      border: none;
+      cursor: pointer;
+      border-radius: 999px;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: transform 0.08s ease, box-shadow 0.1s ease,
+        background 0.1s ease, border-color 0.1s ease;
+      white-space: nowrap;
+    }
+
+    .btn {
+      padding: 7px 14px;
+      background: var(--accent);
+      color: #ffffff;
+      box-shadow: 0 12px 25px rgba(37, 99, 235, 0.4);
+    }
+
+    .btn.secondary {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+      box-shadow: none;
+    }
+
+    .btn-icon {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      background: transparent;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn:active,
+    .btn-icon:active {
+      transform: scale(0.96);
+      box-shadow: none;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 0.9fr 2.1fr 1.1fr;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    @media (max-width: 1024px) {
+      .layout {
+        grid-template-columns: 1.1fr 2fr;
+        grid-template-rows: auto auto;
+      }
+      .panel-vocab {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .panel-books {
+        order: 1;
+      }
+
+      .panel-reader {
+        order: 2;
+      }
+
+      .panel-vocab {
+        order: 3;
+      }
+    }
+
+    .panel {
+      border-radius: 16px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: radial-gradient(circle at top left, rgba(248, 250, 252, 0.8), rgba(241, 245, 249, 0.95));
+      padding: 10px 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    body.dark .panel {
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.98));
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pill {
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      color: var(--text-soft);
+    }
+
+    .panel-body {
+      font-size: 13px;
+      color: var(--text-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-height: 60px;
+    }
+
+    /* 左侧：书籍选择 */
+    .book-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .book-item {
+      border-radius: 12px;
+      padding: 8px 8px;
+      border: 1px solid transparent;
+      background: rgba(248, 250, 252, 0.9);
+      cursor: pointer;
+      transition: background 0.1s ease, border-color 0.1s ease,
+        transform 0.08s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .book-item:hover {
+      background: rgba(219, 234, 254, 0.9);
+      border-color: var(--accent-soft);
+    }
+
+    .book-item.active {
+      border-color: var(--accent);
+      background: rgba(219, 234, 254, 1);
+      transform: translateY(-1px);
+      box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+    }
+
+    body.dark .book-item {
+      background: rgba(15, 23, 42, 0.9);
+      border-color: rgba(31, 41, 55, 0.9);
+    }
+
+    body.dark .book-item:hover {
+      background: rgba(30, 64, 175, 0.5);
+      border-color: rgba(59, 130, 246, 0.7);
+    }
+
+    body.dark .book-item.active {
+      background: rgba(37, 99, 235, 0.8);
+    }
+
+    .book-title {
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .book-meta {
+      font-size: 11px;
+      opacity: 0.85;
+    }
+
+    /* 中间：阅读区 */
+    .reader-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .reader-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .reader-status {
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .reader-area {
+      position: relative;
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      padding: 10px 10px 12px;
+      background: var(--bg-soft);
+      max-height: 420px;
+      overflow-y: auto;
+      line-height: 1.7;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    body.dark .reader-area {
+      background: rgba(15, 23, 42, 0.95);
+    }
+
+    .reader-area p {
+      margin-bottom: 8px;
+      text-indent: 1.1em;
+    }
+
+    .reader-area p:first-child {
+      margin-top: 2px;
+    }
+
+    .reader-area::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .reader-area::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.7);
+      border-radius: 999px;
+    }
+
+    .word {
+      padding: 1px 1px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.08s ease, color 0.08s ease;
+    }
+
+    .word:hover {
+      background: rgba(59, 130, 246, 0.12);
+    }
+
+    .word.selected-word {
+      background: rgba(59, 130, 246, 0.2);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .highlight-selection {
+      background: rgba(251, 191, 36, 0.3);
+    }
+
+    .word-info {
+      margin-top: 6px;
+      padding: 6px 8px;
+      border-radius: 10px;
+      background: rgba(239, 246, 255, 0.9);
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      font-size: 12px;
+    }
+
+    body.dark .word-info {
+      background: rgba(15, 23, 42, 0.95);
+      border-color: rgba(59, 130, 246, 0.7);
+    }
+
+    .word-info-title {
+      font-weight: 600;
+      margin-bottom: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+    }
+
+    .word-info-body {
+      font-size: 12px;
+      color: var(--text-soft);
+    }
+
+    /* 右侧：生词本 */
+    .vocab-input-row {
+      display: flex;
+      gap: 6px;
+    }
+
+    .vocab-input-row input {
+      flex: 1;
+      padding: 6px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(248, 250, 252, 0.95);
+      color: var(--text);
+      font-size: 12px;
+      outline: none;
+    }
+
+    body.dark .vocab-input-row input {
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .vocab-list {
+      margin-top: 4px;
+      max-height: 260px;
+      overflow-y: auto;
+      border-radius: 10px;
+      border: 1px dashed rgba(148, 163, 184, 0.8);
+      padding: 6px 6px;
+      background: rgba(248, 250, 252, 0.9);
+    }
+
+    body.dark .vocab-list {
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .vocab-item {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      padding: 4px 5px;
+      border-radius: 8px;
+      font-size: 12px;
+      border: 1px solid transparent;
+      cursor: default;
+    }
+
+    .vocab-item:nth-child(odd) {
+      background: rgba(239, 246, 255, 0.8);
+    }
+
+    .vocab-item:nth-child(even) {
+      background: rgba(241, 245, 249, 0.9);
+    }
+
+    body.dark .vocab-item:nth-child(odd),
+    body.dark .vocab-item:nth-child(even) {
+      background: rgba(15, 23, 42, 0.9);
+      border-color: rgba(31, 41, 55, 0.9);
+    }
+
+    .vocab-word-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .vocab-word {
+      font-weight: 600;
+    }
+
+    .vocab-meaning {
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .vocab-tags {
+      font-size: 10px;
+      opacity: 0.85;
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1px;
+    }
+
+    .vocab-remove {
+      cursor: pointer;
+      color: #ef4444;
+      font-size: 11px;
+    }
+
+    .hint-text {
+      font-size: 11px;
+      color: var(--text-soft);
+      line-height: 1.5;
+    }
+
+    footer {
+      margin-top: 6px;
+      padding-top: 8px;
+      border-top: 1px dashed var(--border);
+      font-size: 11px;
+      color: var(--text-soft);
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .footer-link {
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="title-block">
+        <h1>
+          English Classic Reader
+          <span class="badge">名著精读 · Demo</span>
+        </h1>
+        <div class="subtitle">
+          选择一本英文名著 👉 点击单词查看释义 👉 选中句子用 Google 翻译快速理解。
+        </div>
+      </div>
+      <div class="header-controls">
+        <button class="btn secondary" id="howToBtn">📘 使用说明</button>
+        <button class="btn-icon" id="themeToggle" title="切换深色 / 浅色">
+          🌙
+        </button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <!-- 左：书籍 -->
+      <section class="panel panel-books">
+        <div class="panel-header">
+          <div class="panel-title">
+            📚 Books
+            <span class="pill">选择一本英文名著</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="book-list" id="bookList">
+            <!-- 只有一本示例，你可以以后加更多 -->
+            <div class="book-item active" data-book-id="jane-eyre">
+              <div class="book-title">Jane Eyre</div>
+              <div class="book-meta">
+                Charlotte Brontë · 第一章节选（示例）
+              </div>
+            </div>
+            <div class="book-item" data-book-id="custom-book">
+              <div class="book-title">My Custom Book</div>
+              <div class="book-meta">
+                你可以在代码里替换成《The Little Prince》等完整文本
+              </div>
+            </div>
+          </div>
+          <p class="hint-text" style="margin-top:6px;">
+            提示：为了避免版权问题，这里只放了《Jane Eyre》的节选示例。  
+            你可以在 <code>books</code> 变量里，粘贴自己合法获得的英文原文。
+          </p>
+        </div>
+      </section>
+
+      <!-- 中：阅读器 -->
+      <section class="panel panel-reader">
+        <div class="panel-header">
+          <div class="panel-title">
+            🧭 Reader
+            <span class="pill" id="currentBookLabel">Jane Eyre · Ch.1 excerpt</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="reader-toolbar">
+            <div class="reader-buttons">
+              <button class="btn" id="translateSelectionBtn">
+                🌐 Translate Selection
+              </button>
+              <button class="btn secondary" id="clearSelectionBtn">
+                ✨ Clear Selection
+              </button>
+            </div>
+            <div class="reader-status" id="readerStatus">
+              单击单词查看释义 · 拖动选中文本后点「Translate Selection」
+            </div>
+          </div>
+          <div class="reader-area" id="readerArea">
+            <!-- 文本由 JS 动态注入 -->
+          </div>
+          <div class="word-info" id="wordInfo" style="display:none;">
+            <div class="word-info-title">
+              <span id="wordInfoWord">word</span>
+              <button class="btn secondary" id="addToVocabBtn" style="padding:3px 8px;font-size:11px;">
+                ➕ 加入生词本
+              </button>
+            </div>
+            <div class="word-info-body" id="wordInfoBody"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 右：生词本 -->
+      <section class="panel panel-vocab">
+        <div class="panel-header">
+          <div class="panel-title">
+            📝 Vocab Notebook
+            <span class="pill" id="vocabCountLabel">0 words</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <p class="hint-text">
+            点击某个单词后，可以把它加入这里，自己写中文意思或例句。  
+            <br />你也可以手动输入新单词。
+          </p>
+          <div class="vocab-input-row">
+            <input type="text" id="vocabWordInput" placeholder="word" />
+            <input type="text" id="vocabMeaningInput" placeholder="中文释义 / 备注" />
+            <button class="btn secondary" id="addVocabManualBtn" style="padding:6px 10px;font-size:12px;">
+              Add
+            </button>
+          </div>
+          <div class="vocab-list" id="vocabList">
+            <!-- 生词项由 JS 注入 -->
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      <span>
+        本工具仅作学习示例使用。你可以自由修改样式、增加更多书籍和词典数据。
+      </span>
+      <span class="footer-link" id="devHintLink">
+        如何扩展：加入本地词典 / 本地存储？
+      </span>
+    </footer>
+  </div>
+
+  <script>
+    // ============ 示例书籍内容（你可以替换成自己的文本） ============
+    // 说明：
+    // books.janeEyre.text 是一个多段落字符串。
+    // 你之后可以把整个章节或整本书粘贴进来（公共版权或你有版权的文本）。
+
+    const books = {
+      "jane-eyre": {
+        label: "Jane Eyre · Chapter 1 (excerpt)",
+        text: `
+There was no possibility of taking a walk that day. We had been wandering, indeed, in the leafless shrubbery an hour in the morning; but since dinner (Mrs. Reed, when there was no company, dined early) the cold winter wind had brought with it clouds so sombre, and a rain so penetrating, that further outdoor exercise was now out of the question.
+
+I was glad of it; I never liked long walks, especially on chilly afternoons: dreadful to me was the coming home in the raw twilight, with nipped fingers and toes, and a heart saddened by the chidings of Bessie, the nurse, and humbled by the consciousness of my physical inferiority to Eliza, John, and Georgiana Reed.
+
+The said Eliza, John, and Georgiana were now clustered round their mama in the drawing-room: she lay reclined on a sofa by the fireside, and with her darlings about her (for the time neither quarrelling nor crying) she looked perfectly happy.
+        `.trim()
+      },
+      "custom-book": {
+        label: "Custom Book · Replace in code",
+        text: `
+This is a placeholder for your own English book.
+You can paste any legal text here, for example another classic novel you are studying.
+        `.trim()
+      }
+    };
+
+    // ============ 简易词典（可以自己慢慢扩充） ============
+    // key: 小写单词; value: {pos:词性, cn:中文含义, note:英文解释或例句}
+    const miniDictionary = {
+      "possibility": {
+        pos: "n.",
+        cn: "可能性",
+        note: "something that may happen or be true"
+      },
+      "wander": {
+        pos: "v.",
+        cn: "漫步，游荡",
+        note: "to walk slowly without a clear direction or purpose"
+      },
+      "leafless": {
+        pos: "adj.",
+        cn: "无叶的",
+        note: "having no leaves"
+      },
+      "shrubbery": {
+        pos: "n.",
+        cn: "灌木丛",
+        note: "a place in a garden where many shrubs grow"
+      },
+      "penetrating": {
+        pos: "adj.",
+        cn: "刺骨的，渗透的",
+        note: "very strong and difficult to ignore, often used for cold or sound"
+      },
+      "twilight": {
+        pos: "n.",
+        cn: "黄昏，暮色",
+        note: "the soft light in the sky when the sun has just set"
+      },
+      "physical": {
+        pos: "adj.",
+        cn: "身体的，肉体的",
+        note: "relating to the body"
+      },
+      "inferiority": {
+        pos: "n.",
+        cn: "劣势，自卑",
+        note: "the state of not being as good as others"
+      },
+      "cluster": {
+        pos: "v.",
+        cn: "聚集，簇拥",
+        note: "to come together in a small group"
+      },
+      "recline": {
+        pos: "v.",
+        cn: "斜倚，躺靠",
+        note: "to lie or lean back in a relaxed way"
+      }
+    };
+
+    // ============ 基本 DOM 引用 ============
+    const readerArea = document.getElementById("readerArea");
+    const currentBookLabel = document.getElementById("currentBookLabel");
+    const bookListEl = document.getElementById("bookList");
+    const readerStatus = document.getElementById("readerStatus");
+    const wordInfo = document.getElementById("wordInfo");
+    const wordInfoWord = document.getElementById("wordInfoWord");
+    const wordInfoBody = document.getElementById("wordInfoBody");
+    const translateSelectionBtn = document.getElementById("translateSelectionBtn");
+    const clearSelectionBtn = document.getElementById("clearSelectionBtn");
+    const addToVocabBtn = document.getElementById("addToVocabBtn");
+
+    const vocabListEl = document.getElementById("vocabList");
+    const vocabCountLabel = document.getElementById("vocabCountLabel");
+    const vocabWordInput = document.getElementById("vocabWordInput");
+    const vocabMeaningInput = document.getElementById("vocabMeaningInput");
+    const addVocabManualBtn = document.getElementById("addVocabManualBtn");
+
+    const themeToggle = document.getElementById("themeToggle");
+    const howToBtn = document.getElementById("howToBtn");
+    const devHintLink = document.getElementById("devHintLink");
+
+    // ============ 状态 ============
+    let currentBookId = "jane-eyre";
+    let currentSelectedWord = null;
+    let vocabList = [];
+
+    // ============ 渲染书籍文本 ============
+    function renderBook(bookId) {
+      const book = books[bookId];
+      if (!book) return;
+
+      currentBookId = bookId;
+      currentBookLabel.textContent = book.label;
+
+      // 清空阅读区
+      readerArea.innerHTML = "";
+      hideWordInfo();
+      currentSelectedWord = null;
+
+      const paragraphs = book.text.split(/\n\s*\n/); // 根据空行划分段落
+      paragraphs.forEach((para) => {
+        const pEl = document.createElement("p");
+        pEl.innerHTML = wrapWords(para);
+        readerArea.appendChild(pEl);
+      });
+
+      readerStatus.textContent =
+        "当前：" +
+        book.label +
+        " · 单击单词查看释义 / 选中句子使用 Translate Selection。";
+    }
+
+    // 把一段文字拆成单词，用 span 包裹
+    function wrapWords(text) {
+      // 思路：用正则把单词和标点分开
+      // 例子："hello, world!" -> ["hello", ", ", "world", "!"]
+      const tokens = text.match(/[\w']+|[^\w\s]+|\s+/g) || [];
+      return tokens
+        .map((token) => {
+          if (/^[\w']+$/.test(token)) {
+            // 是单词
+            const clean = token;
+            return `<span class="word" data-word="${clean}">${token}</span>`;
+          } else {
+            // 空格或标点
+            return token;
+          }
+        })
+        .join("");
+    }
+
+    // ============ 单词点击事件 ============
+    readerArea.addEventListener("click", (e) => {
+      const span = e.target;
+      if (span.classList.contains("word")) {
+        const wordRaw = span.getAttribute("data-word") || span.textContent;
+        const word = wordRaw.toLowerCase();
+        currentSelectedWord = word;
+
+        // 高亮当前点击单词
+        document
+          .querySelectorAll(".word.selected-word")
+          .forEach((el) => el.classList.remove("selected-word"));
+        span.classList.add("selected-word");
+
+        showWordInfo(wordRaw);
+      }
+    });
+
+    function showWordInfo(wordRaw) {
+      const w = wordRaw.toLowerCase();
+      const entry = miniDictionary[w];
+
+      wordInfoWord.textContent = wordRaw;
+
+      if (entry) {
+        wordInfoBody.innerHTML = `
+          <strong>${entry.pos}</strong> · ${entry.cn}<br />
+          <span style="font-size:11px;opacity:0.9;">${entry.note}</span>
+        `;
+      } else {
+        wordInfoBody.innerHTML = `
+          暂无内置解释 🧐<br />
+          · 你可以：点击「加入生词本」，自己填中文意思。<br />
+          · 或者：选中这个单词，然后用「Translate Selection」访问 Google 翻译。`;
+      }
+
+      wordInfo.style.display = "block";
+    }
+
+    function hideWordInfo() {
+      wordInfo.style.display = "none";
+    }
+
+    // ============ Translate Selection：选中文本用 Google 翻译 ============
+    function getSelectedText() {
+      const selection = window.getSelection();
+      if (!selection || selection.rangeCount === 0) return "";
+      return selection.toString().trim();
+    }
+
+    translateSelectionBtn.addEventListener("click", () => {
+      const text = getSelectedText();
+      if (!text) {
+        alert("请先在正文中用鼠标拖动，选中一个单词或一句话。");
+        return;
+      }
+      const query = encodeURIComponent(text);
+      const url = `https://translate.google.com/?sl=en&tl=zh-CN&text=${query}`;
+      window.open(url, "_blank");
+    });
+
+    clearSelectionBtn.addEventListener("click", () => {
+      const selection = window.getSelection();
+      if (selection) selection.removeAllRanges();
+    });
+
+    // ============ 生词本逻辑 ============
+    function renderVocabList() {
+      vocabListEl.innerHTML = "";
+      vocabList.forEach((item, index) => {
+        const div = document.createElement("div");
+        div.className = "vocab-item";
+        div.innerHTML = `
+          <div class="vocab-word-row">
+            <span class="vocab-word">${item.word}</span>
+            <span class="vocab-remove" data-index="${index}">删除</span>
+          </div>
+          <div class="vocab-meaning">${item.meaning || "(暂无释义)"}</div>
+          <div class="vocab-tags">
+            <span>${item.source || "manual"}</span>
+            <span>${item.time}</span>
+          </div>
+        `;
+        vocabListEl.appendChild(div);
+      });
+      vocabCountLabel.textContent = `${vocabList.length} words`;
+    }
+
+    function addVocab(word, meaning, source = "click") {
+      if (!word) return;
+      const time = new Date().toLocaleTimeString();
+      vocabList.push({ word, meaning, source, time });
+      renderVocabList();
+    }
+
+    // 从“单词信息”加入生词本
+    addToVocabBtn.addEventListener("click", () => {
+      if (!currentSelectedWord) {
+        alert("请先点击正文中的某个英文单词。");
+        return;
+      }
+      const meaning = prompt(
+        `为单词 "${currentSelectedWord}" 填写中文意思或备注：`,
+        ""
+      );
+      addVocab(currentSelectedWord, meaning || "", "from word");
+    });
+
+    // 手动添加生词
+    addVocabManualBtn.addEventListener("click", () => {
+      const word = vocabWordInput.value.trim();
+      const meaning = vocabMeaningInput.value.trim();
+      if (!word) {
+        alert("请先填写英文单词。");
+        return;
+      }
+      addVocab(word, meaning || "", "manual");
+      vocabWordInput.value = "";
+      vocabMeaningInput.value = "";
+    });
+
+    // 删除生词
+    vocabListEl.addEventListener("click", (e) => {
+      const target = e.target;
+      if (target.classList.contains("vocab-remove")) {
+        const index = parseInt(target.getAttribute("data-index"), 10);
+        if (!isNaN(index)) {
+          vocabList.splice(index, 1);
+          renderVocabList();
+        }
+      }
+    });
+
+    // ============ 书籍切换 ============
+    bookListEl.addEventListener("click", (e) => {
+      let item = e.target.closest(".book-item");
+      if (!item) return;
+      const bookId = item.getAttribute("data-book-id");
+      if (!bookId) return;
+      // active 状态
+      document
+        .querySelectorAll(".book-item")
+        .forEach((el) => el.classList.remove("active"));
+      item.classList.add("active");
+
+      renderBook(bookId);
+    });
+
+    // ============ 主题切换 ============
+    function updateThemeIcon() {
+      if (document.body.classList.contains("dark")) {
+        themeToggle.textContent = "☀️";
+        themeToggle.title = "切换为浅色模式";
+      } else {
+        themeToggle.textContent = "🌙";
+        themeToggle.title = "切换为深色模式";
+      }
+    }
+
+    themeToggle.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      updateThemeIcon();
+    });
+
+    updateThemeIcon();
+
+    // ============ 使用说明 & 开发说明 ============
+    howToBtn.addEventListener("click", () => {
+      alert(
+        [
+          "【使用方法】",
+          "1. 左边选择书籍，目前示例为 Jane Eyre 第一章节选。",
+          "2. 中间为阅读区：",
+          "   · 单击英文单词：查看简单释义，并可加入右侧生词本。",
+          "   · 用鼠标拖动选中一句话或一段 → 点击 “Translate Selection” 打开 Google 翻译。",
+          "3. 右侧生词本：",
+          "   · 可从单词信息中一键加入。",
+          "   · 也可以直接在输入框中手动添加单词和中文意思。",
+          "",
+          "你可以在代码中替换 books 变量的 text 内容，放入你正在读的整本英文书。"
+        ].join("\n")
+      );
+    });
+
+    devHintLink.addEventListener("click", () => {
+      alert(
+        [
+          "【如何自己扩展这个工具】",
+          "1. 扩充字典：",
+          "   · 在 miniDictionary 里继续加单词：'word': {pos, cn, note}。",
+          "2. 加入本地保存：",
+          "   · 可以用 localStorage 把 vocabList 存起来，刷新网页不丢失生词。",
+          "   · 例子：在 addVocab 之后调用 localStorage.setItem('vocab', JSON.stringify(vocabList));",
+          "3. 多本书：",
+          "   · 在 books 对象里继续添加新的 bookId。",
+          "   · 在 HTML 里的 .book-list 里加对应的 book-item。",
+          "4. 更高级玩法：",
+          "   · 未来可以接入真正的翻译 API 或者 AI 模型做“智能讲解”。"
+        ].join("\n")
+      );
+    });
+
+    // ============ 初始化 ============
+    renderBook(currentBookId);
+    renderVocabList();
+  </script>
+</body>
+</html>
